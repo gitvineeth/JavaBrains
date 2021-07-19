@@ -19,7 +19,12 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                 .and()
                 .withUser("kuku")
                 .password("kuku1")
-                .roles("USER");
+                .roles("USER")
+                 .and()
+                  .withUser("sysadm")
+                   .password("admin1")
+                   .roles("ADMIN");
+            ;
     }
 
     @Bean
@@ -27,8 +32,11 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
         return NoOpPasswordEncoder.getInstance();
     }
 
-//    @Override
-//    protected void configure(HttpSecurity http) throws Exception {
-//        http.csrf().disable().authorizeRequests().antMatchers("/").hasRole("USER");
-//    }
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.authorizeRequests().antMatchers("/admin").hasRole("ADMIN")
+                .antMatchers("/user").hasAnyRole("USER","ADMIN")
+                .antMatchers("/noauth").permitAll().anyRequest().authenticated()
+                .and().formLogin();
+    }
 }
